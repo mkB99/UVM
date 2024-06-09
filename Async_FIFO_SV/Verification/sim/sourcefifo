@@ -1,5 +1,0 @@
-vsim -do run1.do
-vsim -do run2.do
-vsim -do run3.do
-vsim -do run4.do
-vsim -do run5.do
