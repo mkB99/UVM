@@ -1,0 +1,44 @@
+# //  Questa Sim-64
+# //  Version 10.5c linux_x86_64 Jul 20 2016
+# //
+# //  Copyright 1991-2016 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# do modports.do
+# QuestaSim-64 vlog 10.5c Compiler 2016.07 Jul 20 2016
+# Start time: 14:46:39 on Jan 06,2022
+# vlog -reportprogress 300 top.sv 
+# -- Compiling interface inf
+# -- Compiling module dut
+# -- Compiling module top
+# 
+# Top level modules:
+# 	top
+# End time: 14:46:39 on Jan 06,2022, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -c -novopt top 
+# Start time: 14:46:39 on Jan 06,2022
+# ** Warning: (vsim-8891) All optimizations are turned off because the -novopt switch is in effect. This will cause your simulation to run very slowly. If you are using this switch to preserve visibility for Debug or PLI features please see the User's Manual section on Preserving Object Visibility with vopt.
+# Refreshing /home/mayurkrishna.b/svn/mayurkrishna/Assignments/SV/Interfaces/Modports/without-clock/work.top
+# Loading sv_std.std
+# Loading work.top
+# Refreshing /home/mayurkrishna.b/svn/mayurkrishna/Assignments/SV/Interfaces/Modports/without-clock/work.inf
+# Loading work.inf
+# Refreshing /home/mayurkrishna.b/svn/mayurkrishna/Assignments/SV/Interfaces/Modports/without-clock/work.dut
+# Loading work.dut
+# data at address=  4 is rdata= 35 
+# 
+# memory before writing: '{40, 21, 42, 35, 46, 59, 66, 17}
+# memory after writing wdata= 22 at address=  5 is : '{40, 21, 22, 35, 46, 59, 66, 17}
+# ** Note: $finish    : top.sv(18)
+#    Time: 1110 ns  Iteration: 0  Instance: /top
+# End time: 14:46:46 on Jan 06,2022, Elapsed time: 0:00:07
+# Errors: 0, Warnings: 1

@@ -1,0 +1,51 @@
+//----------------------------------------------------------------------
+// Project             : UVM_COUNTER
+// Unit                : counter_env 
+// File                : trans.sv
+//----------------------------------------------------------------------
+// Created by          : Badam Mayur Krishna
+// Creation Date       : 15 May 2022 
+//----------------------------------------------------------------------
+// Description         : Transaction class for uvm_counter. 
+//                       This class is extended from uvm_sequence_item.
+//----------------------------------------------------------------------
+
+`ifndef COUNTER_TRANSACTION_BLAND
+`define COUNTER_TRANSACTION_BLAND
+
+class cntr_trans extends uvm_sequence_item;
+
+   rand logic Reset;
+   rand logic Enable_1;
+   rand logic Load_1;
+   rand logic Up_Down_1;
+   rand logic [`WIDTH-1:0] In_Data_1;
+   logic [`WIDTH-1:0] Out_Data_1;
+   rand logic Enable_2;
+   rand logic Load_2;
+   rand logic Up_Down_2;
+   rand logic [`WIDTH-1:0] In_Data_2;
+   logic [`WIDTH-1:0] Out_Data_2;
+   
+   constraint ENB {Enable_1 == 1; Enable_2 == 1;};
+   
+   `uvm_object_utils_begin(cntr_trans)
+      `uvm_field_int(Enable_1, UVM_ALL_ON)
+      `uvm_field_int(Load_1, UVM_ALL_ON)
+      `uvm_field_int(Up_Down_1, UVM_ALL_ON)
+      `uvm_field_int(In_Data_1, UVM_ALL_ON)
+      `uvm_field_int(Out_Data_1, UVM_ALL_ON)
+      `uvm_field_int(Enable_2, UVM_ALL_ON)
+      `uvm_field_int(Load_2, UVM_ALL_ON)
+      `uvm_field_int(Up_Down_2, UVM_ALL_ON)
+      `uvm_field_int(In_Data_2, UVM_ALL_ON)
+      `uvm_field_int(Out_Data_2, UVM_ALL_ON)
+   `uvm_object_utils_end
+   
+   function new (string name = "cntr_trans");
+     super.new(name);
+   endfunction
+
+endclass
+
+`endif

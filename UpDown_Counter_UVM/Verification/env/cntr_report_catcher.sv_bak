@@ -1,0 +1,23 @@
+/*********************************************************************************************************************************
+ * Name                 : cntr_report_catcher.sv
+ * Creation Date        : 14-09-2022
+----------------------------------------------------------------------------------------------------------------------------------
+ * Author               : Badam Mayur Krishna
+ * Author's Email       : mayurkrishna.b@alpha-numero.tech
+----------------------------------------------------------------------------------------------------------------------------------
+ * Description          : This file is for class report catcher for counter project
+**********************************************************************************************************************************/
+
+class cntr_catcher extends uvm_report_catcher;
+   function new(string name="cntr_catcher");
+      super.new(name);
+   endfunction
+
+   function action_E catch();
+      if((get_id("SCOREBOARD") || get_id("CHECK") || get_id("REF_MODEL"))) begin
+         set_verbosity("UVM_DEBUG");
+      end
+      return THROW;
+   endfunction
+endclass
+

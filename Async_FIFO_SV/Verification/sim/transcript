@@ -1,0 +1,30 @@
+# vsim -c -vopt -sv_seed random top -do "run -all;exit" "+RESET_TEST" 
+# Start time: 23:26:00 on May 16,2024
+# ** Note: (vsim-8009) Loading existing optimized design _opt
+# //  Questa Sim-64
+# //  Version 2023.4 linux_x86_64 Oct  9 2023
+# //
+# //  Copyright 1991-2023 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading sv_std.std
+# Loading work.wintf(fast)
+# Loading work.rintf(fast)
+# Loading work.fifo_pkg(fast)
+# Loading work.fifo_top_sv_unit(fast)
+# Loading work.top(fast)
+# ** Error (suppressible): (vsim-12460) Illegal assignment to class sv_std.std::mailbox #(class work.fifo_pkg::wtrans) from class sv_std.std::mailbox #(class work.fifo_pkg::rtrans)
+#    Time: 0 ns  Iteration: 0  Region: /fifo_pkg File: ../env/fifo_scoreboard.sv Line: 31
+# ** Error (suppressible): (vsim-12460) Illegal assignment to class sv_std.std::mailbox #(class work.fifo_pkg::rtrans) from class sv_std.std::mailbox #(class work.fifo_pkg::wtrans)
+#    Time: 0 ns  Iteration: 0  Region: /fifo_pkg File: ../env/fifo_scoreboard.sv Line: 30
+# Error loading design
+# End time: 23:26:02 on May 16,2024, Elapsed time: 0:00:02
+# Errors: 2, Warnings: 0

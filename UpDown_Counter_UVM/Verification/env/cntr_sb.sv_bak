@@ -1,0 +1,181 @@
+//----------------------------------------------------------------------
+// Project             : UVM_COUNTER
+// Unit                : counter_env 
+// File                : sb.sv
+//----------------------------------------------------------------------
+// Created by          : Badam Mayur Krishna
+// Creation Date       : 15 May 2022 
+// Last Modified Date  : 20 May 2022
+//----------------------------------------------------------------------
+// Description         : Scoreboard class for uvm_counter. 
+//                       This class is extended from uvm_scoreboard
+//----------------------------------------------------------------------
+`ifndef COUNTER_SCOREBOARD
+`define COUNTER_SCOREBOARD
+
+//using decl for creating multiple write methods
+`uvm_analysis_imp_decl (_0)
+`uvm_analysis_imp_decl (_1)
+
+class cntr_sb extends uvm_scoreboard;
+   //Factory registration
+   `uvm_component_utils(cntr_sb)
+
+   //interface handle for getting Reset value
+   virtual cntr_inf.RST_SC_MP rst_vif;
+   
+   //transaction handles for actual and expected transactions
+   cntr_trans tr0,tr1,ref_tr0,ref_tr1;
+   
+   //analysis imp ports
+   uvm_analysis_imp_0 #(cntr_trans, cntr_sb) sb_imp0;
+   uvm_analysis_imp_1 #(cntr_trans, cntr_sb) sb_imp1;
+   
+   local int no_of_dut;
+   //local Reset signal for getting the reset from interface
+   bit Reset; 
+
+   reset_cg rcg1,rcg2;
+   elu_cg ecg1,ecg2;
+   roll_over_back_cg rocg1,rocg2 ;
+   priority_cg pcg1,pcg2;
+   ports_cg pocg;
+
+   //Constructor method
+   function new(string name, uvm_component parent);
+      super.new(name,parent);
+      //creating covergroups' objects 
+      rcg1 = new();
+      ecg1 = new();
+      rocg1 = new();
+      pcg1 = new();
+      
+      rcg2 = new();
+      ecg2 = new();
+      rocg2 = new();
+      pcg2 = new();
+
+      pocg = new();
+   endfunction
+
+   //build phase
+   virtual function void build_phase(uvm_phase phase);
+      super.build_phase(phase);
+      //creating transaction handles
+      //Getting rst_vif from config_db
+      if(!uvm_config_db #(virtual cntr_inf)::get(this, "*","rst_vif", rst_vif))
+            `uvm_fatal("RST_VIF_CONFIG","cannot get")         
+
+      if(!uvm_config_db #(int)::get(this, "*","no_of_dut", no_of_dut))
+            `uvm_fatal("NO_OF_DUT","value cannot be get")     
+
+      `uvm_info("NO_OF_DUT", $sformatf("no_of_dut = %0d",no_of_dut), UVM_DEBUG)
+
+      tr0 = new();
+      ref_tr0 = new();
+      tr1 = new();
+      ref_tr1 = new();
+
+      //Constucting implementation ports
+      sb_imp0 = new("sb_imp0",this);
+      sb_imp1 = new("sb_imp1",this);
+   endfunction
+
+   //function write for counter1
+   virtual function void write_0(cntr_trans req);
+      Reset = rst_vif.sb_rst_cb.Reset;
+      `uvm_info("SCOREBOARD", $sformatf("Reset: %0d", Reset), UVM_MEDIUM)
+      this.tr0.mode = req.mode;
+      this.tr0.emode = req.emode;
+      this.tr0.InData = req.InData;
+      this.tr0.OutData = req.OutData;
+
+      `uvm_info("SCOREBOARD", "scb got transaction",UVM_FULL)
+      //tr0.print();
+      
+      //calling ref_model method
+      ref_tr0 = ref_model(tr0, ref_tr0,0);
+
+      //calling check_data method
+      check_data(tr0, ref_tr0,0);
+      `uvm_info("SCOREBOARD", "write0 method is working..",UVM_DEBUG)
+      
+      //sampling covergroups
+      rcg1.sample(Reset, tr0.mode, tr0.emode, tr0.InData, ref_tr0.OutData);
+      ecg1.sample(Reset, tr0.mode, tr0.emode, tr0.InData, ref_tr0.OutData);
+      rocg1.sample(tr0.mode, tr0.emode, ref_tr0.OutData);
+      pcg1.sample(Reset, tr0.mode, tr0.emode, tr0.InData, ref_tr0.OutData);
+      pocg.sample(Reset, tr0.mode, tr1.mode, tr0.emode, tr1.emode, tr0.InData, tr1.InData);
+   endfunction
+
+   //function write for counter2
+   virtual function void write_1(cntr_trans req);
+      Reset = rst_vif.sb_rst_cb.Reset;
+      this.tr1.mode = req.mode;
+      this.tr1.emode = req.emode;
+      this.tr1.InData = req.InData;
+      this.tr1.OutData = req.OutData;
+
+      `uvm_info("SCOREBOARD", "write1 method is working..",UVM_DEBUG)
+
+      //calling ref_model method
+      ref_tr1 = ref_model(tr1, ref_tr1,1);
+
+      //calling check_data method
+      check_data(tr1, ref_tr1,2);
+
+      //sampling covergroups
+      rcg2.sample(Reset, tr1.mode, tr1.emode, tr1.InData, ref_tr1.OutData);
+      ecg2.sample(Reset, tr1.mode, tr1.emode, tr1.InData, ref_tr1.OutData);
+      rocg2.sample(tr1.mode, tr1.emode, ref_tr1.OutData);
+      pcg2.sample(Reset, tr1.mode, tr1.emode, tr1.InData, ref_tr1.OutData);
+      pocg.sample(Reset, tr0.mode, tr1.mode, tr0.emode, tr1.emode, tr0.InData, tr1.InData);
+   endfunction
+
+   //ref_model() - method for generating expected transactions according to the requirement
+   virtual function cntr_trans ref_model(cntr_trans act, exp, int n);
+      `uvm_info("SCOREBOARD","Reference model started",UVM_FULL)
+      
+      exp.InData = act.InData; 
+      exp.mode = act.mode; 
+      exp.emode = act.emode; 
+
+      `uvm_info("SCOREBOARD", $sformatf("emode: %0s", act.emode), UVM_DEBUG) 
+      //Logic for generating expected transactions
+      if (Reset) begin
+         exp.OutData = 8'h0;
+      end
+      else if(act.mode == DISABLE) begin
+         if(act.emode == NORMAL || act.emode == DISABLE_UP || act.emode == DISABLE_LOAD || act.emode == DISABLE_LOAD_UP) begin
+         end
+      end
+      else if(act.mode == LOAD ) begin
+         if(act.emode == NORMAL || act.emode == LOAD_UP) begin
+            exp.OutData = act.InData;
+         end
+      end
+      else if(act.mode == UP) begin
+         exp.OutData += 1;
+      end
+      else if (act.mode == DOWN) begin
+         exp.OutData -= 1;
+      end
+
+      `uvm_info("REF_MODEL",$sformatf("%0d",exp.OutData),UVM_HIGH)
+
+      return exp; //returning expected OutData 
+   endfunction
+   
+   //check_data() - function for comparing expected and actual data
+   virtual function void check_data(cntr_trans act, exp, int n);
+      if(exp.OutData === act.OutData)
+         `uvm_info("CHECK","PASS", UVM_NONE)
+      else if(exp.OutData !== act.OutData)
+         `uvm_error("CHECK","FAIL")
+      
+      `uvm_info("CHECK",$sformatf("ACT%0d: mode: %s, emode: %s, In: %0d, Out : %0d",n, act.mode, act.emode, act.InData, act.OutData), UVM_MEDIUM)
+      `uvm_info("CHECK",$sformatf("EXP%0d: mode: %s, emode: %s, In: %0d, Out : %0d",n, exp.mode, exp.emode, exp.InData, exp.OutData), UVM_MEDIUM)
+   endfunction
+endclass
+   
+`endif

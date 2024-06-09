@@ -1,0 +1,86 @@
+/*********************************************************************************************************************************
+ * Name                 : cntr_coverage.sv
+ * Creation Date        : --2022
+ * Last Modified        : --2022
+----------------------------------------------------------------------------------------------------------------------------------
+ * Author               : Badam Mayur Krishna
+ * Author's Email       : mayurkrishna.b@alpha-numero.tech
+----------------------------------------------------------------------------------------------------------------------------------
+ * Description          : 
+**********************************************************************************************************************************/
+`ifndef COUNTER_COVERAGE
+`define COUNTER_COVERAGE
+
+   //covergroup for reset
+   covergroup reset_cg with function sample(bit Reset, mode_e mode, error_mode_e emode, bit [`WIDTH-1:0] InData, OutData);
+      option.per_instance = 1;
+      type_option.merge_instances = 1;
+
+      option.comment = "This coverage is for checking reset and its priority against Enable,Load, UpDown";
+      
+      RESET_PRIORITY: coverpoint {Reset, (InData inside {['h01:'hFE]}), mode, OutData}{
+         bins bin1 =          {[13'b1_1_110_0000_0000:13'b1_1_110_0000_0000]}; 
+         wildcard bins bin2 = ([13'b0_1_100_0000_0001:13'b0_1_100_1111_1110] => 13'b1_1_100_0000_0000); 
+         wildcard bins bin3 = ([13'b0_1_110_0000_0001:13'b0_1_110_1111_1110] => 13'b1_1_110_0000_0000);
+         wildcard bins bin4 = ([13'b0_1_101_0000_0001:13'b0_1_101_1111_1110] => 13'b1_1_101_0000_0000);
+      }
+   endgroup
+   
+   //covergroup for checking Enable, Load, UpDown
+   covergroup elu_cg with function sample (bit Reset, mode_e mode, error_mode_e emode, bit [`WIDTH-1:0] InData, OutData);
+      option.per_instance = 1;
+      type_option.merge_instances = 1;
+
+      option.comment = "This coverage is for checking Enable,Load, UpDown";
+
+      ELU: coverpoint {Reset, (InData inside {['h00:'hff]}), mode, emode, OutData} {
+         wildcard bins elu_bin_1 = {16'b0_1_000_010_0000_0000};
+         wildcard bins elu_bin_2 = {[16'b0_1_000_010_0000_0000 : 16'b0_1_000_010_1111_1111]};
+         wildcard bins elu_bin_3 = {[16'b0_1_110_000_0000_0000 : 16'b0_1_110_000_1111_1111]};
+         wildcard bins elu_bin_4 = {[16'b0_1_101_000_0000_0000 : 16'b0_1_101_000_1111_1111]};
+         wildcard bins elu_bin_5 = {[16'b0_1_100_000_0000_0000 : 16'b0_1_100_000_1111_1111]};
+      }
+   endgroup
+
+   //covergroup for rollback and rollover test
+   covergroup roll_over_back_cg with function sample (mode_e mode, error_mode_e emode, bit [`WIDTH-1:0] OutData);
+      option.per_instance = 1;
+      type_option.merge_instances = 1;
+
+      option.comment = "This coverage is for checking the rollover and rollback functionality";
+      
+      RORB: coverpoint {mode, OutData} {
+         wildcard bins rorb_bin_1 = (11'b101_1111_1111 => 11'b101_0000_0000);
+         wildcard bins rorb_bin_2 = (11'b100_0000_0000 => 11'b100_1111_1111);
+      }
+   endgroup
+
+   //covergroup for checking the priority
+   covergroup priority_cg with function sample (bit Reset, mode_e mode, error_mode_e emode, bit [`WIDTH-1:0] InData, OutData);
+      option.per_instance = 1;
+      type_option.merge_instances = 1;
+
+      option.comment = "This coverage is for checking the priority of Enable, Load, UpDown";
+      
+      PRIORITY: coverpoint {Reset, InData, mode, emode, OutData} {
+         bins priority_bin_1 = (23'b0_0000_0101_110_000_0000_0101 => 23'b0_0000_0101_000_010_0000_0101);
+         bins priority_bin_2 = (23'b0_0000_0110_110_111_0000_0110 => 23'b0_0000_0110_000_001_0000_0110);
+         bins priority_bin_3 = (23'b0_0000_0101_100_000_0000_0100 => 23'b0_0000_0101_110_000_0000_0101);
+         bins priority_bin_4 = (23'b0_0000_0101_101_000_0000_0110 => 23'b0_0000_0101_110_111_0000_0101);
+      }
+   endgroup
+
+   //covergroup for checking ports
+   covergroup ports_cg with function sample (bit Reset, mode_e mode0,mode1, error_mode_e emode0,emode1, bit [`WIDTH-1:0] InData0,InData1);
+      option.per_instance = 1;
+      type_option.merge_instances = 1;
+
+      option.comment = "This coverage is for checking if the ports are connected correctly to correct counter";
+      
+      PORTS: coverpoint {Reset, (InData0 == 'd5), mode0, emode0, (InData1 == 'd20), mode1, emode1} {
+         bins ports_bin_1 = {15'b0_1_000_010__1_110_000};
+         bins ports_bin_2 = {15'b0_1_110_000__1_000_010};
+         bins ports_bin_3 = {15'b0_1_101_000__1_100_000};
+      }
+   endgroup
+`endif

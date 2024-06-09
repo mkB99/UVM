@@ -1,0 +1,34 @@
+This file is for help on how to use the scripts - python or make to run tests.
+
+For running single test - better to use python script 
+Different options for python scripts:
+It takes 3 values:
+   1. test name in uvm / plusarg value in sv
+   2. run option (Default = "0")
+   3. verbosity (Default = UVM_MEDIUM)
+
+Run options:
+   1. For running test from command line (-c option) only for log. => value = "0" or "command_line"
+   2. For running test from questa sim - for waveforms => value = "1" or "with_waveform"
+   3. For running test from command line - for coverage => value = "2" or "with_coverage"
+   3. For running test from command line - for coverage and waveforms => value = "3" or "with_coverage_and_waveform"
+   4. For running through visualizer => value = "4" or "visualizer"
+
+--------------------------------------------------------
+
+For running multiple tests(regression) sequentially - use make utility file(Makefile script)
+   1. For running all tests and generating coverage report => regress1
+   2. For running all tests, generating coverage report and opening coverage report in msim for functional coverage => regress2
+   3. For running all tests, generating coverage report and opening coverage report in firefox for mainly code coverage and functional coverage => regress3
+   4. For running all tests and generating coverage report and exclude coverage in exclusions.do file => regress4
+
+Makefile other options:
+   i. Opening coverage report in msim => cov
+   ii. Opening coverage report in firefox => code_cov
+   iii. Opening coverage report in msim and then firefox => func_code
+   iv. Cleaning up the run directory => clean
+   v. Opening all the log files of regression => logs
+
+Example:
+   python3 script.py abc_test "1" UVM_MEDIUM
+   python3 script.py abc_test with_waveform UVM_MEDIUM

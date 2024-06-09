@@ -1,0 +1,28 @@
+
+class ram_test extends uvm_test;
+ 
+  `uvm_component_utils(ram_test)
+
+  ram_env env_h;
+
+  ram_base_wseqs wseqs_h;
+  ram_base_rseqs rseqs_h;
+  
+  function new (string name = "ram_ragent", uvm_component parent=null);
+	  super.new(name,parent);
+   endfunction
+   
+  function void build_phase (uvm_phase phase);
+     super.build_phase(phase);
+	 env_h = ram_env::type_id::create("env_h",this);
+	 	 //creates sequences
+   endfunction
+  
+  task run_phase (uvm_phase phase);
+     phase.raise_objection(this);
+     wseqs_h.start(env_h.wagent_h.wseqr_h);
+     rseqs_h.start(env_h.ragent_h.rseqr_h);	 
+	 phase.drop_objection(this);
+  endtask
+  
+endclass
