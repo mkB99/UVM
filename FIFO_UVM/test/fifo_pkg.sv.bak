@@ -1,5 +1,0 @@
-package ram_pkg;
-
-  `include "ram_trans.sv"
-  
-endpackage
